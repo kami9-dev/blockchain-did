@@ -9,7 +9,29 @@ The app models four roles in a student discount verification flow:
 - **Student / Holder** views minimal credential JSON in a wallet-like page.
 - **Discount Platform / Verifier** approves or rejects credentials using local off-chain checks plus on-chain registry checks.
 
-This phase includes Solidity/Hardhat registry artifacts and MetaMask-based frontend integration for the local Hardhat network. It intentionally does **not** add production auth, DID resolver integration, ZK proofs, production VC libraries, or private-key handling in frontend environment variables.
+### DID Resolution
+
+The verifier resolves Ethereum-based issuer DIDs (`did:ethr`) before validating issuer proofs.
+
+During verification, the issuer DID embedded in the credential is resolved into a DID Document using an Ethereum DID resolver. The DID Document provides the issuer's verification methods and public keys required to enticate credential signatures.
+
+This approach aligns the prototype more closely with the W3C DID architecture by separating identifiers from their associated verification material.
+
+Verification flow:
+
+Credential
+↓
+Extract issuer DID
+↓
+Resolve DID Document
+↓
+Retrieve verification method
+↓
+Verify issuer signature
+↓
+Perform on-chain registry checks
+↓
+Approve / Reject
 
 ## Tech Stack
 
@@ -158,19 +180,19 @@ Seed data includes:
 - A valid issued credential
 - An expired/inactive credential
 - A sample verifier request record
-- Wallet-auth demo users for Hardhat account #0 as admin, #1 as issuer,
+- Wallet- demo users for Hardhat account #0 as admin, #1 as issuer,
   #2 as student, and #3 as verifier
 
 Credential JSON is stored as a string for SQLite compatibility and returned as parsed JSON by the API.
 
 ## Implemented Features
 
-- Wallet-based demo authentication
+- Wallet-based demo entication
   - nonce challenge endpoint
   - MetaMask signature verification
   - signed HTTP-only session cookie
   - role mapping for admin, issuer, student, and verifier wallets
-- API-level role authorization
+- API-level role orization
   - admin-only issuer and user management
   - issuer-scoped student and credential issuance
   - student-scoped wallet credential reads
@@ -179,7 +201,7 @@ Credential JSON is stored as a string for SQLite compatibility and returned as p
   - credentials start as `PENDING_ONCHAIN`
   - successful hash registration marks credentials `ISSUED`
   - revocation stores tx hash, reason, and timestamp
-  - authenticated actions and blockchain callbacks are recorded in `AuditLog`
+  - enticated actions and blockchain callbacks are recorded in `AuditLog`
 - Landing page with role cards and dashboard entry points
 - Admin issuer dashboard
   - list issuers from SQLite
@@ -301,7 +323,7 @@ Browser write calls use the MetaMask signer only. No private keys are stored in 
 15. Back in **Issuer**, revoke the credential on-chain. The local DB credential status is updated to `REVOKED` with transaction metadata.
 16. Generate a fresh challenge/proof and verify again; observe a **Rejected** result because the credential is revoked.
 
-Seeded demo users are mapped to local Hardhat signer accounts so wallet auth, issuer proof signing, presentation signing, and on-chain writes can be demonstrated without creating extra records.
+Seeded demo users are mapped to local Hardhat signer accounts so wallet , issuer proof signing, presentation signing, and on-chain writes can be demonstrated without creating extra records.
 
 ## Useful Commands
 
