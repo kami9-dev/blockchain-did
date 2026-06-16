@@ -17,6 +17,7 @@
     "db:migrate": "RUST_LOG=trace prisma migrate dev",
     "db:seed": "node --import tsx prisma/seed.ts",
     "db:reset": "RUST_LOG=trace prisma migrate reset --force"
+    
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.6.1",
@@ -57,4 +58,5 @@
   "prisma": {
     "seed": "node --import tsx prisma/seed.ts"
   }
+  npm install did-resolver ethr-did-resolver
 }
